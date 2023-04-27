@@ -9,4 +9,4 @@
 5. Open any EFX file with 010
 
 # Credits
-* thezippotm, for making the RSZparser.DLL
+* thezippotm, for reversing most of the effect formats
