@@ -1,5 +1,6 @@
 # DMC5_EFX
 010 Editor Binary Template for editing RE Engine's Devil May Cry 5 particle effect files (.efx)
+
 Uses a DLL to resolve the name of each hash existing in the game (names are translated by Google Translate from Japanese to English)
 
 # Installation / Usage
