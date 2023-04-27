@@ -1,0 +1,2568 @@
+//------------------------------------------------
+//--- 010 Editor v9.0.2 Binary Template
+//
+//      File: DMC5_EFX
+//   Authors: Darkness
+//   Version: 3
+//   Purpose: Editing EFX files.
+//  Category: Modding
+// File Mask: 
+//  ID Bytes: 65 66 78 72 //efxr
+//   History: I Just Felt Like I Should Make Something Like This LOL.
+//------------------------------------------------
+#link "HashTools.dll"
+string mdf_hash_decode(uint32 hash);
+ubyte  mdf_is_color(ushort parameter_count, uint32 hash);
+wstring eff_name_utf8_hash_decode(uint32 hash);
+wstring eff_name_utf16_hash_decode(uint32 hash);
+#endlink
+
+LittleEndian();
+mdf_hash_decode(1);
+local int a <hidden=true>, b <hidden=true>,c <hidden=true>,d <hidden=true>,e <hidden=true>,f <hidden=true>,g <hidden=true>,h <hidden=true>,i <hidden=true>,j <hidden=true>,x <hidden=true>, y <hidden=true>,z <hidden=true>,p <hidden=true>,red <hidden=true>,green <hidden=true>,blue <hidden=true>,alpha <hidden=true>,onlyAlpha <hidden=true>,alphaLessRed <hidden=true>,alphaLessGreen <hidden=true>,alphaLessBlue <hidden=true>, c5it <hidden=true>, deb <hidden=true>;
+local uint64 colorBitCount_arr[999] <hidden=true>, intCount_arr[999] <hidden=true>, redPos[999] <hidden=true>,greenPos[999] <hidden=true>,bluePos[999] <hidden=true>,alphaPos[999] <hidden=true>,spos[999] <hidden=true>,mpos[999] <hidden=true>,lpos[999] <hidden=true>,fpos[999] <hidden=true>,onlyAlphaPos[999] <hidden=true>,alphaLessRedPos[999] <hidden=true>,alphaLessGreenPos[999] <hidden=true>,alphaLessBluePos[999] <hidden=true>, backPos <hidden=true>, backPoseSC <hidden=true>, backPoseSCin <hidden=true>, debug[50] <hidden=true>;
+alphaLessRed = 0,alphaLessGreen = 0,alphaLessBlue = 0,onlyAlpha = 0,red = 0,green = 0,blue = 0,alpha = 0,h = 0,i = 0,j = 0,p = 0;
+
+enum EffectGraphType
+{
+    ItemType_Unknown = 0x00,
+	ItemType_Spawn = 0x01,
+	ItemType_SpawnExpression = 0x02,
+	ItemType_Transform2D = 0x03,
+	ItemType_Transform2DModifier = 0x04,
+	ItemType_Transform2DClip = 0x05,
+	ItemType_Transform2DExpression = 0x06,
+	ItemType_Transform3D = 0x07,
+	ItemType_Transform3DModifier = 0x08,
+	ItemType_Transform3DClip = 0x09,
+	ItemType_Transform3DExpression = 0x0A,
+	ItemType_ParentOptions = 0x0B,
+	ItemType_FixRandomGenerator = 0x0C,
+	ItemType_TypeBillboard2D = 0x0D,
+	ItemType_TypeBillboard2DExpression = 0x0E,
+	ItemType_TypeBillboard3D = 0x0F,
+	ItemType_TypeBillboard3DExpression = 0x10,
+	ItemType_TypeMesh = 0x11,
+	ItemType_TypeMeshClip = 0x12,
+	ItemType_TypeMeshExpression = 0x13,
+	ItemType_TypeRibbonFollow = 0x14,
+	ItemType_TypeRibbonLength = 0x15,
+	ItemType_TypeRibbonChain = 0x16,
+	ItemType_TypeRibbonFixEnd = 0x17,
+	ItemType_TypeRibbonLightweight = 0x18,
+	ItemType_TypeRibbonFollowExpression = 0x19,
+	ItemType_TypeRibbonLengthExpression = 0x1A,
+	ItemType_TypeRibbonChainExpression = 0x1B,
+	ItemType_TypeRibbonFixEndExpression = 0x1C,
+	ItemType_TypePolygon = 0x1D,
+	ItemType_TypePolygonClip = 0x1E,
+	ItemType_TypePolygonExpression = 0x1F,
+	ItemType_TypeRibbonTrail = 0x20,
+	ItemType_TypePolygonTrail = 0x21,
+	ItemType_TypeNoDraw = 0x22,
+	ItemType_TypeNoDrawExpression = 0x23,
+	ItemType_Velocity2D = 0x24,
+	ItemType_Velocity2DExpression = 0x25,
+	ItemType_Velocity3D = 0x26,
+	ItemType_Velocity3DExpression = 0x27,
+	ItemType_RotateAnim = 0x28,
+	ItemType_RotateAnimExpression = 0x29,
+	ItemType_ScaleAnim = 0x2A,
+	ItemType_ScaleAnimExpression = 0x2B,
+	ItemType_Life = 0x2C,
+	ItemType_LifeExpression = 0x2D,
+	ItemType_UVSequence = 0x2E,
+	ItemType_UVSequenceExpression = 0x2F,
+	ItemType_UVScroll = 0x30,
+	ItemType_TextureUnit = 0x31,
+	ItemType_EmitterShape2D = 0x32,
+	ItemType_EmitterShape2DExpression = 0x33,
+	ItemType_EmitterShape3D = 0x34,
+	ItemType_EmitterShape3DExpression = 0x35,
+	ItemType_AlphaCorrection = 0x36,
+	ItemType_TypeStrainRibbon = 0x37,
+	ItemType_TypeStrainRibbonExpression = 0x38,
+	ItemType_TypeLightning3D = 0x39,
+	ItemType_ShaderSettings = 0x3A,
+	ItemType_ShaderSettingsExpression = 0x3B,
+	ItemType_Distortion = 0x3C,
+	ItemType_RenderTarget = 0x3D,
+	ItemType_PtLife = 0x3E,
+	ItemType_PtBehavior = 0x3F,
+	ItemType_PtBehaviorClip = 0x40,
+	ItemType_PlayEfx = 0x41,
+	ItemType_FadeByAngle = 0x42,
+	ItemType_FadeByAngleExpression = 0x43,
+	ItemType_FadeByEmitterAngle = 0x44,
+	ItemType_FadeByDepth = 0x45,
+	ItemType_FadeByDepthExpression = 0x46,
+	ItemType_FadeByOcclusion = 0x47,
+	ItemType_FadeByOcclusionExpression = 0x48,
+	ItemType_FakeDoF = 0x49,
+	ItemType_LuminanceBleed = 0x4A,
+	ItemType_TypeNodeBillboard = 0x4B,
+	ItemType_TypeNodeBillboardExpression = 0x4C,
+	ItemType_UnitCulling = 0x4D,
+	ItemType_FluidEmitter2D = 0x4E,
+	ItemType_FluidSimulator2D = 0x4F,
+	ItemType_PlayEmitter = 0x50,
+	ItemType_PtTransform3D = 0x51,
+	ItemType_PtTransform3DClip = 0x52,
+	ItemType_PtTransform2D = 0x53,
+	ItemType_PtTransform2DClip = 0x54,
+	ItemType_PtVelocity3D = 0x55,
+	ItemType_PtVelocity3DClip = 0x56,
+	ItemType_PtVelocity2D = 0x57,
+	ItemType_PtVelocity2DClip = 0x58,
+	ItemType_PtColliderAction = 0x59,
+	ItemType_PtCollision = 0x5A,
+	ItemType_PtColor = 0x5B,
+	ItemType_PtColorClip = 0x5C,
+	ItemType_PtUvSequence = 0x5D,
+	ItemType_PtUvSequenceClip = 0x5E,
+	ItemType_MeshEmitter = 0x5F,
+	ItemType_MeshEmitterClip = 0x60,
+	ItemType_MeshEmitterExpression = 0x61,
+	ItemType_VectorFieldParameter = 0x62,
+	ItemType_VectorFieldParameterClip = 0x63,
+	ItemType_VectorFieldParameterExpression = 0x64,
+	ItemType_DepthOperator = 0x65,
+	ItemType_ShapeOperator = 0x66,
+	ItemType_ShapeOperatorExpression = 0x67,
+	ItemType_WindInfluence3D = 0x68,
+	ItemType_TypeGpuBillboard = 0x69,
+	ItemType_TypeGpuBillboardExpression = 0x6A,
+	ItemType_TypeGpuRibbonFollow = 0x6B,
+	ItemType_EmitterPriority = 0x6C,
+	ItemType_DrawOverlay = 0x6D,
+	ItemType_VectorField = 0x6E,
+	ItemType_VolumeField = 0x6F,
+	ItemType_AngularVelocity3D = 0x70,
+	ItemType_PtAngularVelocity3D = 0x71,
+	ItemType_PtAngularVelocity3DExpression = 0x72,
+	ItemType_AngularVelocity2D = 0x73,
+	ItemType_PtAngularVelocity2D = 0x74,
+	ItemType_PtAngularVelocity2DExpression = 0x75,
+	ItemType_IgnorePlayerColor = 0x76,
+	ItemType_ProceduralDistortion = 0x77,
+	ItemType_ProceduralDistortionClip = 0x78,
+	ItemType_ItemNum = 0x79,
+};
+
+string GetSegmentName(struct Segment& segment){
+    switch(segment.typeId){
+	case ItemType_Unknown:
+		return "Unknown";
+		break;
+	case ItemType_Spawn:
+		return "Spawn";
+		break;
+	case ItemType_SpawnExpression:
+		return "Spawn Expression";
+		break;
+	case ItemType_Transform2D:
+		return "Transform 2D";
+		break;
+	case ItemType_Transform2DModifier:
+		return "Transform 2D Modifier";
+		break;
+	case ItemType_Transform2DClip:
+		return "Transform 2D Clip";
+		break;
+	case ItemType_Transform2DExpression:
+		return "Transform 2D Expression";
+		break;
+	case ItemType_Transform3D:
+		return "Transform 3D";
+		break;
+	case ItemType_Transform3DModifier:
+		return "Transform 3D Modifier";
+		break;
+	case ItemType_Transform3DClip:
+		return "Transform 3D Clip";
+		break;
+	case ItemType_Transform3DExpression:
+		return "Transform 3D Expression";
+		break;
+	case ItemType_ParentOptions:
+		return "Parent Options";
+		break;
+	case ItemType_FixRandomGenerator:
+		return "Fix Random Generator";
+		break;
+	case ItemType_TypeBillboard2D:
+		return "Type Billboard 2D";
+		break;
+	case ItemType_TypeBillboard2DExpression:
+		return "Type Billboard 2D Expression";
+		break;
+	case ItemType_TypeBillboard3D:
+		return "Type Billboard 3D";
+		break;
+	case ItemType_TypeBillboard3DExpression:
+		return "Type Billboard 3D Expression";
+		break;
+	case ItemType_TypeMesh:
+		return "Type Mesh";
+		break;
+	case ItemType_TypeMeshClip:
+		return "Type Mesh Clip";
+		break;
+	case ItemType_TypeMeshExpression:
+		return "Type Mesh Expression";
+		break;
+	case ItemType_TypeRibbonFollow:
+		return "Type Ribbon Follow";
+		break;
+	case ItemType_TypeRibbonLength:
+		return "Type Ribbon Length";
+		break;
+	case ItemType_TypeRibbonChain:
+		return "Type Ribbon Chain";
+		break;
+	case ItemType_TypeRibbonFixEnd:
+		return "Type Ribbon Fix End";
+		break;
+	case ItemType_TypeRibbonLightweight:
+		return "Type Ribbon Lightweight";
+		break;
+	case ItemType_TypeRibbonFollowExpression:
+		return "Type Ribbon Follow Expression";
+		break;
+	case ItemType_TypeRibbonLengthExpression:
+		return "Type Ribbon Length Expression";
+		break;
+	case ItemType_TypeRibbonChainExpression:
+		return "Type Ribbon Chain Expression";
+		break;
+	case ItemType_TypeRibbonFixEndExpression:
+		return "Type Ribbon Fix End Expression";
+		break;
+	case ItemType_TypePolygon:
+		return "Type Polygon";
+		break;
+	case ItemType_TypePolygonClip:
+		return "Type Polygon Clip";
+		break;
+	case ItemType_TypePolygonExpression:
+		return "Type Polygon Expression";
+		break;
+	case ItemType_TypeRibbonTrail:
+		return "Type Ribbon Trail";
+		break;
+	case ItemType_TypePolygonTrail:
+		return "Type Polygon Trail";
+		break;
+	case ItemType_TypeNoDraw:
+		return "Type No Draw";
+		break;
+	case ItemType_TypeNoDrawExpression:
+		return "Type No Draw Expression";
+		break;
+	case ItemType_Velocity2D:
+		return "Velocity 2D";
+		break;
+	case ItemType_Velocity2DExpression:
+		return "Velocity 2D Expression";
+		break;
+	case ItemType_Velocity3D:
+		return "Velocity 3D";
+		break;
+	case ItemType_Velocity3DExpression:
+		return "Velocity 3D Expression";
+		break;
+	case ItemType_RotateAnim:
+		return "Rotate Anim";
+		break;
+	case ItemType_RotateAnimExpression:
+		return "Rotate Anim Expression";
+		break;
+	case ItemType_ScaleAnim:
+		return "Scale Anim";
+		break;
+	case ItemType_ScaleAnimExpression:
+		return "Scale Anim Expression";
+		break;
+	case ItemType_Life:
+		return "Life";
+		break;
+	case ItemType_LifeExpression:
+		return "Life Expression";
+		break;
+	case ItemType_UVSequence:
+		return "UV Sequence";
+		break;
+	case ItemType_UVSequenceExpression:
+		return "UV Sequence Expression";
+		break;
+	case ItemType_UVScroll:
+		return "UV Scroll";
+		break;
+	case ItemType_TextureUnit:
+		return "Texture Unit";
+		break;
+	case ItemType_EmitterShape2D:
+		return "Emitter Shape 2D";
+		break;
+	case ItemType_EmitterShape2DExpression:
+		return "Emitter Shape 2D Expression";
+		break;
+	case ItemType_EmitterShape3D:
+		return "Emitter Shape 3D";
+		break;
+	case ItemType_EmitterShape3DExpression:
+		return "Emitter Shape 3D Expression";
+		break;
+	case ItemType_AlphaCorrection:
+		return "Alpha Correction";
+		break;
+	case ItemType_TypeStrainRibbon:
+		return "Type Strain Ribbon";
+		break;
+	case ItemType_TypeStrainRibbonExpression:
+		return "Type Strain Ribbon Expression";
+		break;
+	case ItemType_TypeLightning3D:
+		return "Type Lightning 3D";
+		break;
+	case ItemType_ShaderSettings:
+		return "Shader Settings";
+		break;
+	case ItemType_ShaderSettingsExpression:
+		return "Shader Settings Expression";
+		break;
+	case ItemType_Distortion:
+		return "Distortion";
+		break;
+	case ItemType_RenderTarget:
+		return "Render Target";
+		break;
+	case ItemType_PtLife:
+		return "Pt Life";
+		break;
+	case ItemType_PtBehavior:
+		return "Pt Behavior";
+		break;
+	case ItemType_PtBehaviorClip:
+		return "Pt Behavior Clip";
+		break;
+	case ItemType_PlayEfx:
+		return "Play Efx";
+		break;
+	case ItemType_FadeByAngle:
+		return "Fade By Angle";
+		break;
+	case ItemType_FadeByAngleExpression:
+		return "Fade By Angle Expression";
+		break;
+	case ItemType_FadeByEmitterAngle:
+		return "Fade By Emitter Angle";
+		break;
+	case ItemType_FadeByDepth:
+		return "Fade By Depth";
+		break;
+	case ItemType_FadeByDepthExpression:
+		return "Fade By Depth Expression";
+		break;
+	case ItemType_FadeByOcclusion:
+		return "Fade By Occlusion";
+		break;
+	case ItemType_FadeByOcclusionExpression:
+		return "Fade By Occlusion Expression";
+		break;
+	case ItemType_FakeDoF:
+		return "Fake Do F";
+		break;
+	case ItemType_LuminanceBleed:
+		return "Luminance Bleed";
+		break;
+	case ItemType_TypeNodeBillboard:
+		return "Type Node Billboard";
+		break;
+	case ItemType_TypeNodeBillboardExpression:
+		return "Type Node Billboard Expression";
+		break;
+	case ItemType_UnitCulling:
+		return "Unit Culling";
+		break;
+	case ItemType_FluidEmitter2D:
+		return "Fluid Emitter 2D";
+		break;
+	case ItemType_FluidSimulator2D:
+		return "Fluid Simulator 2D";
+		break;
+	case ItemType_PlayEmitter:
+		return "Play Emitter";
+		break;
+	case ItemType_PtTransform3D:
+		return "Pt Transform 3D";
+		break;
+	case ItemType_PtTransform3DClip:
+		return "Pt Transform 3D Clip";
+		break;
+	case ItemType_PtTransform2D:
+		return "Pt Transform 2D";
+		break;
+	case ItemType_PtTransform2DClip:
+		return "Pt Transform 2D Clip";
+		break;
+	case ItemType_PtVelocity3D:
+		return "Pt Velocity 3D";
+		break;
+	case ItemType_PtVelocity3DClip:
+		return "Pt Velocity 3D Clip";
+		break;
+	case ItemType_PtVelocity2D:
+		return "Pt Velocity 2D";
+		break;
+	case ItemType_PtVelocity2DClip:
+		return "Pt Velocity 2D Clip";
+		break;
+	case ItemType_PtColliderAction:
+		return "Pt Collider Action";
+		break;
+	case ItemType_PtCollision:
+		return "Pt Collision";
+		break;
+	case ItemType_PtColor:
+		return "Pt Color";
+		break;
+	case ItemType_PtColorClip:
+		return "Pt Color Clip";
+		break;
+	case ItemType_PtUvSequence:
+		return "Pt Uv Sequence";
+		break;
+	case ItemType_PtUvSequenceClip:
+		return "Pt Uv Sequence Clip";
+		break;
+	case ItemType_MeshEmitter:
+		return "Mesh Emitter";
+		break;
+	case ItemType_MeshEmitterClip:
+		return "Mesh Emitter Clip";
+		break;
+	case ItemType_MeshEmitterExpression:
+		return "Mesh Emitter Expression";
+		break;
+	case ItemType_VectorFieldParameter:
+		return "Vector Field Parameter";
+		break;
+	case ItemType_VectorFieldParameterClip:
+		return "Vector Field Parameter Clip";
+		break;
+	case ItemType_VectorFieldParameterExpression:
+		return "Vector Field Parameter Expression";
+		break;
+	case ItemType_DepthOperator:
+		return "Depth Operator";
+		break;
+	case ItemType_ShapeOperator:
+		return "Shape Operator";
+		break;
+	case ItemType_ShapeOperatorExpression:
+		return "Shape Operator Expression";
+		break;
+	case ItemType_WindInfluence3D:
+		return "Wind Influence 3D";
+		break;
+	case ItemType_TypeGpuBillboard:
+		return "Type Gpu Billboard";
+		break;
+	case ItemType_TypeGpuBillboardExpression:
+		return "Type Gpu Billboard Expression";
+		break;
+	case ItemType_TypeGpuRibbonFollow:
+		return "Type Gpu Ribbon Follow";
+		break;
+	case ItemType_EmitterPriority:
+		return "Emitter Priority";
+		break;
+	case ItemType_DrawOverlay:
+		return "Draw Overlay";
+		break;
+	case ItemType_VectorField:
+		return "Vector Field";
+		break;
+	case ItemType_VolumeField:
+		return "Volume Field";
+		break;
+	case ItemType_AngularVelocity3D:
+		return "Angular Velocity 3D";
+		break;
+	case ItemType_PtAngularVelocity3D:
+		return "Pt Angular Velocity 3D";
+		break;
+	case ItemType_PtAngularVelocity3DExpression:
+		return "Pt Angular Velocity 3D Expression";
+		break;
+	case ItemType_AngularVelocity2D:
+		return "Angular Velocity 2D";
+		break;
+	case ItemType_PtAngularVelocity2D:
+		return "Pt Angular Velocity 2D";
+		break;
+	case ItemType_PtAngularVelocity2DExpression:
+		return "Pt Angular Velocity 2D Expression";
+		break;
+	case ItemType_IgnorePlayerColor:
+		return "Ignore Player Color";
+		break;
+	case ItemType_ProceduralDistortion:
+		return "Procedural Distortion";
+		break;
+	case ItemType_ProceduralDistortionClip:
+		return "Procedural Distortion Clip";
+		break;
+	case ItemType_ItemNum:
+		return "Item Num";
+		break;
+    }
+
+    return "Unknown!";
+}
+
+typedef struct{
+	ubyte   colorRed <name="Red", bgcolor=0x9B9BFF>;
+	ubyte   colorGreen <name="Green", bgcolor=0x67AA67>;
+	ubyte   colorBlue <name="Blue", bgcolor=0xFF9B9B>;
+	ubyte   colorAlpha <name="Alpha", bgcolor=0x9BFFFF>;
+} small_cc <name="Small Color Code">;
+
+typedef struct{
+	ubyte   colorRed <name="Red", bgcolor=0x9B9BFF>;
+	ubyte   colorGreen <name="Green", bgcolor=0x67AA67>;
+	ubyte   colorBlue <name="Blue", bgcolor=0xFF9B9B>;
+	ubyte   colorAlpha <name="Alpha", bgcolor=0x9BFFFF>;
+	ubyte   colorRed2 <name="Red", bgcolor=0x9B9BFF>;
+	ubyte   colorGreen2 <name="Green", bgcolor=0x67AA67>;
+	ubyte   colorBlue2 <name="Blue", bgcolor=0xFF9B9B>;
+	ubyte   colorAlpha2 <name="Alpha", bgcolor=0x9BFFFF>;
+	float   ukn_float <name="Might be brightness">;
+} mid_cc <name="Medium Color Code">;
+
+typedef struct{
+	ubyte   colorRed <name="Red", bgcolor=0x9B9BFF>;
+	ubyte   colorGreen <name="Green", bgcolor=0x67AA67>;
+	ubyte   colorBlue <name="Blue", bgcolor=0xFF9B9B>;
+	ubyte   colorAlpha <name="Alpha", bgcolor=0x9BFFFF>;
+	ubyte   colorRed2 <name="Red", bgcolor=0x9B9BFF>;
+	ubyte   colorGreen2 <name="Green", bgcolor=0x67AA67>;
+	ubyte   colorBlue2 <name="Blue", bgcolor=0xFF9B9B>;
+	ubyte   colorAlpha2 <name="Alpha", bgcolor=0x9BFFFF>;
+	ubyte   colorRed3 <name="Red", bgcolor=0x9B9BFF>;
+	ubyte   colorGreen3 <name="Green", bgcolor=0x67AA67>;
+	ubyte   colorBlue3 <name="Blue", bgcolor=0xFF9B9B>;
+	ubyte   colorAlpha3 <name="Alpha", bgcolor=0x9BFFFF>;;
+	float   Brightness <name="Might be brightness">;
+} large_cc <name="Large Color Code">;
+
+typedef struct{
+    float  red <name="Float Red", bgcolor=0x9B9BFF>;
+    float  green <name="Float Green", bgcolor=0x67AA67>;
+    float  blue <name="Float Blue", bgcolor=0xFF9B9B>;
+    float  brightness <name="Float Brightness", bgcolor=0x9BFFFF>;
+} float_cc <name="Float Color Code">;
+
+typedef struct{
+    uint32  size <name="UVS Path Size">;
+    local uint64 pos <hidden=true> = FTell();
+    if(size) wchar_t path[size] <name="UVS Path", bgcolor=0x99FF99, open=suppress>; else local wstring path <hidden=true> = "No Path Linked!";
+} uvs_t <read=Read_UVS, write=Write_UVS, open=suppress>;
+
+wstring Read_UVS(uvs_t &input){
+    return input.path;
+}
+
+void Write_UVS(uvs_t &input, string s){
+    local uint32 size = (Strlen(s) + 1) * 2;
+    if(!Strlen(s)) size = 0;
+    local uint32 bSize = input.size;
+    if(bSize) DeleteBytes(input.pos, input.size * 2);
+    if(size){
+        InsertBytes(input.pos, size, 0x00);
+        WriteWString(input.pos, (wstring)s);
+        input.size = Strlen(s) + 1;
+    } else {
+       input.size = 0; 
+    }
+    if(!bSize)input.path = s;
+}
+
+typedef struct{
+    uint32  size <name="MSK4 Path Size">;
+    local uint64 pos <hidden=true> = FTell();
+    if(size) wchar_t path[size] <name="MSK4 Path", bgcolor=0xFFC1C1, open=suppress>; else local wstring path <hidden=true> = "No Path Linked!";
+} msk4_t <read=Read_MSK4, write=Write_MSK4, open=suppress>;
+
+wstring Read_MSK4(msk4_t &input){
+    return input.path;
+}
+
+void Write_MSK4(msk4_t &input, string s){
+    local uint32 size = (Strlen(s) + 1) * 2;
+    if(!Strlen(s)) size = 0;
+    local uint32 bSize = input.size;
+    if(bSize) DeleteBytes(input.pos, input.size * 2);
+    if(size){ 
+        InsertBytes(input.pos, size, 0x00);
+        WriteWString(input.pos, (wstring)s);
+        input.size = Strlen(s) + 1;
+    } else {
+       input.size = 0; 
+    }
+    if(!bSize)input.path = s;
+}
+
+typedef struct{
+    uint32 size <name="Bone Name Size", bgcolor=0xC0FFC0>;
+    local uint64 pos <hidden=true> = FTell();
+    if(size == 0x02){
+        wchar_t bone[1] <bgcolor=0xABA8FF, name="Bone Name">;
+    } else{
+        wchar_t bone[size/2] <bgcolor=0x99CCFF, name="Bone Name", open=suppress>;
+    }
+} bone_t <read=Read_Bone, write=Write_Bone, open=suppress>;
+
+wstring Read_Bone(bone_t &input){
+    if(input.size == 0x02 || input.size == 0x00){
+        return (wstring)"No Bone Linked!";
+    } else{
+        return input.bone;
+    }
+}
+
+void Write_Bone(bone_t &input, string s){
+    local uint32 size = (Strlen(s) + 1) * 2;
+    if(input.size) DeleteBytes(input.pos, input.size);
+    InsertBytes(input.pos, size, 0x00);
+    WriteWString(input.pos, (wstring)s);
+    input.size = (Strlen(s) + 1) * 2;
+}
+
+typedef struct{
+    uint32  size <name="Mesh Path Size">;
+    local uint64 bakPos <hidden=true> = FTell();
+    local uint64 pos <hidden=true> = FTell() + 8 + overriddenHashCount * 28;
+    FSeek(pos);
+    if(size) wchar_t path[size] <name="Mesh Path", bgcolor=0x99FF99, open=suppress>; else local wstring path <hidden=true> = "No Path Linked!";
+    FSeek(bakPos);
+} mdf_mesh_t <read=Read_MDF_Mesh, write=Write_MDF_Mesh, open=suppress>;
+
+wstring Read_MDF_Mesh(mdf_mesh_t &input){
+    return input.path;
+}
+
+void Write_MDF_Mesh(mdf_mesh_t &input, string s){
+    local uint32 size = (Strlen(s) + 1) * 2;
+    if(!Strlen(s)) size = 0;
+    local uint32 bSize = input.size;
+    if(bSize) DeleteBytes(input.pos, input.size * 2);
+    if(size) InsertBytes(input.pos, size, 0x00);
+    if(size) WriteWString(input.pos, (wstring)s);
+    if(size) input.size = Strlen(s) + 1; else input.size = 0;
+    if(!bSize)input.path = s;
+}
+
+typedef struct{
+    uint32  size <name="MDF Path Size">;
+    local uint64 bakPos <hidden=true> = FTell();
+    local uint64 pos <hidden=true> = FTell() + 4 + overriddenHashCount * 28 + mesh.size * 2;
+    FSeek(pos);
+    if(size) wchar_t path[size] <name="MDF Path", bgcolor=0x66FFFF, open=suppress>; else local wstring path <hidden=true> = "No Path Linked!";
+    FSeek(bakPos);
+} mdf_mdf_t <read=Read_MDF_MDF, write=Write_MDF_MDF, open=suppress>;
+
+wstring Read_MDF_MDF(mdf_mdf_t &input){
+    return input.path;
+}
+
+void Write_MDF_MDF(mdf_mdf_t &input, string s){
+    local uint32 size = (Strlen(s) + 1) * 2;
+    if(!Strlen(s)) size = 0;
+    local uint32 bSize = input.size;
+    if(bSize) DeleteBytes(input.pos, input.size * 2);
+    if(size) InsertBytes(input.pos, size, 0x00);
+    if(size) WriteWString(input.pos, (wstring)s);
+    if(size) input.size = Strlen(s) + 1; else input.size = 0;
+    if(!bSize)input.path = s;
+}
+
+typedef struct{
+    uint32  size <name="Tex Path Size">;
+    local uint64 bakPos <hidden=true> = FTell();
+    local uint64 pos <hidden=true> = FTell() + overriddenHashCount * 28 + mesh.size * 2 + mdf.size * 2;
+    FSeek(pos);
+    if(size) wchar_t path[size] <name="TEX Path", bgcolor=0xFFC79F, open=suppress>; else local wstring path <hidden=true> = "No Path Linked!";
+    FSeek(bakPos);
+} mdf_tex_t <read=Read_MDF_TEX, write=Write_MDF_TEX, open=suppress>;
+
+wstring Read_MDF_TEX(mdf_tex_t &input){
+    return input.path;
+}
+
+void Write_MDF_TEX(mdf_tex_t &input, string s){
+    local uint32 size = (Strlen(s) + 1) * 2;
+    if(!Strlen(s)) size = 0;
+    local uint32 bSize = input.size;
+    if(bSize) DeleteBytes(input.pos, input.size * 2);
+    if(size) InsertBytes(input.pos, size, 0x00);
+    if(size) WriteWString(input.pos, (wstring)s);
+    if(size) input.size = Strlen(s) + 1; else input.size = 0;
+    if(!bSize)input.path = s;
+}
+
+string property_name(struct parameter_struct &fltStruct){
+    return mdf_hash_decode(fltStruct.prop_hash);
+}
+
+typedef enum <UINT32> {
+    LOOP = 0xFFFFFFFF,
+    NOT_LOOP = 0x00000002
+} Cycle_Loop;
+
+typedef enum <UINT32> {
+    starting_frame_only = 0,
+	looped_animation = 1,
+	animate_once = 2,
+	animate_once_and_stay_on_last_untill_2C = 3,
+	
+	starting_frame_only_flipped_vertically = 4,
+	looped_animation_flipped_vertically = 5,
+	animate_once_flipped_vertically = 6,
+	animate_once_and_stay_on_last_untill_2C_flipped_vertically = 7,
+	
+	starting_frame_only_random_flipped_vertically = 8,
+	looped_animation_random_flipped_vertically = 9,
+	animate_once_random_flipped_vertically = 10,
+	animate_once_and_stay_on_last_untill_2C_random_flipped_vertically = 11,
+	
+	starting_frame_only_dup = 12,
+	looped_animation_dup = 13,
+	animate_once_dup = 14,
+	animate_once_and_stay_on_last_untill_2C_dup = 15,
+	
+	starting_frame_only_flipped_horizontally = 16,
+	looped_animation_flipped_horizontally = 17,
+	animate_once_flipped_horizontally = 18,
+	animate_once_and_stay_on_last_untill_2C_flipped_horizontally = 19,
+	
+	starting_frame_only_rotated_180 = 20,
+	looped_animation_rotated_180 = 21,
+	animate_once_rotated_180 = 22,
+	animate_once_and_stay_on_last_untill_2C_rotated_180 = 23,
+	
+	starting_frame_only_random_rotated_180 = 24,
+	looped_animation_random_rotated_180 = 25,
+	animate_once_random_rotated_180 = 26,
+	animate_once_and_stay_on_last_untill_2C_random_rotated_180 = 27,
+	
+	starting_frame_only_flipped_horizontally_dup = 16,
+	looped_animation_flipped_horizontally_dup = 17,
+	animate_once_flipped_horizontally_dup = 18,
+	animate_once_and_stay_on_last_untill_2C_flipped_horizontally_dup = 19,
+	
+	starting_frame_only_random_flipped_horizontally = 32,
+	looped_animation_random_flipped_horizontally = 33,
+	animate_once_random_flipped_horizontally = 34,
+	animate_once_and_stay_on_last_untill_2C_random_flipped_horizontally = 35,
+	
+	starting_frame_only_flipped_vertically_random_flipped_horizontally = 36,
+	looped_animation_flipped_vertically_random_flipped_horizontally = 37,
+	animate_once_flipped_vertically_random_flipped_horizontally = 38,
+	animate_once_and_stay_on_last_untill_2C_flipped_vertically_random_flipped_horizontally = 39
+} Animation_Mode <read=Name_AnimationMode>;
+
+string Name_AnimationMode(Animation_Mode& t){
+    switch(t){
+    case 0:
+        return "First Frame Only";
+        break;
+    
+    case 1:
+        return "Looped Animation";
+        break;
+    
+    case 2:
+        return "Do The Animation Once And Disappear";
+        break;
+    
+    case 3:
+        return "Stay On The Last Frame Until 2C Duration Set Ends";
+        break;
+    
+    case 4:
+        return "First Frame Only - Flipped Vertically";
+        break;
+    
+    case 5:
+        return "Looped Animation - Flipped Vertically";
+        break;
+    
+    case 6:
+        return "Do The Animation Once And Disappear - Flipped Vertically";
+        break;
+    
+    case 7:
+        return "Stay On The Last Frame Until 2C Duration Set Ends - Flipped Vertically";
+        break;
+    
+    case 8:
+        return "First Frame Only - Randomized Flipped Vertically";
+        break;
+    
+    case 9:
+        return "Looped Animation - Randomized Flipped Vertically";
+        break;
+    
+    case 10:
+        return "Do The Animation Once And Disappear - Randomize Flipped Vertically";
+        break;
+    
+    case 11:
+        return "Stay On The Last Frame Until 2C Duration Set Ends - Randomized Flipped Vertically";
+        break;
+    
+    case 12:
+        return "First Frame Only";
+        break;
+    
+    case 13:
+        return "Looped Animation";
+        break;
+    
+    case 14:
+        return "Do The Animation Once And Disappear";
+        break;
+    
+    case 15:
+        return "Stay On The Last Frame Until 2C Duration Set Ends";
+        break;
+    
+    case 16:
+        return "First Frame Only - Flipped Horizontally";
+        break;
+    
+    case 17:
+        return "Looped Animation - Flipped Horizontally";
+        break;
+    
+    case 18:
+        return "Do The Animation Once And Disappear - Flipped Horizontally";
+        break;
+    
+    case 19:
+        return "Stay On The Last Frame Until 2C Duration Set Ends - Flipped Horizontally";
+        break;
+    
+    case 20:
+        return "First Frame Only - Rotated 180 Degrees";
+        break;
+    
+    case 21:
+        return "Looped Animation - Rotated 180 Degrees";
+        break;
+    
+    case 22:
+        return "Do The Animation Once And Disappear - Rotated 180 Degrees";
+        break;
+    
+    case 23:
+        return "Stay On The Last Frame Until 2C Duration Set Ends - Rotated 180 Degrees";
+        break;
+    
+    case 24:
+        return "First Frame Only - Flipped Horizontally - Randomized Flipped Vertically";
+        break;
+    
+    case 25:
+        return "Looped Animation - Flipped Horizontally - Randomized Flipped Vertically";
+        break;
+    
+    case 26:
+        return "Do The Animation Once And Disappear - Flipped Horizontally - Randomized Flipped Vertically";
+        break;
+    
+    case 27:
+        return "Stay On The Last Frame Until 2C Duration Set Ends - Flipped Horizontally - Randomized Flipped Vertically";
+        break;
+    
+    case 28:
+        return "First Frame Only - Flipped Horizontally";
+        break;
+    
+    case 29:
+        return "Looped Animation - Flipped Horizontally";
+        break;
+    
+    case 30:
+        return "Do The Animation Once And Disappear - Flipped Horizontally";
+        break;
+    
+    case 31:
+        return "Stay On The Last Frame Until 2C Duration Set Ends - Flipped Horizontally";
+        break;
+    
+    case 32:
+        return "First Frame Only - Randomized Flipped Horizontally";
+        break;
+    
+    case 33:
+        return "Looped Animation - Randomized Flipped Horizontally";
+        break;
+    
+    case 34:
+        return "Do The Animation Once And Disappear - Randomized Flipped Horizontally";
+        break;
+    
+    case 35:
+        return "Stay On The Last Frame Until 2C Duration Set Ends - Randomized Flipped Horizontally";
+        break;
+    
+    case 36:
+        return "First Frame Only - Flipped Vertically - Randomized Flipped Horizontally";
+        break;
+    
+    case 37:
+        return "Looped Animation - Flipped Vertically - Randomized Flipped Horizontally";
+        break;
+    
+    case 38:
+        return "Do The Animation Once And Disappear - Flipped Vertically - Randomized Flipped Horizontally";
+        break;
+    
+    case 39:
+        return "Stay On The Last Frame Until 2C Duration Set Ends - Flipped Vertically - Randomized Flipped Horizontally";
+        break;
+    //there's more
+    default:
+        local string ret;
+        SPrintf(ret,"%u" ,t);
+        return ret;
+        break;
+    }
+}
+
+typedef struct {
+    int s;
+    int r;
+} RangeI;
+
+
+void HeaderKind(EffectGraphType typeId){
+	switch (typeId) {
+		case ItemType_Spawn: // Not sure about size
+            struct{
+                uint32 ukn1;
+                uint32 ukn2;
+                uint32 count <name="Element Count">;
+                uint32 count <name="Element Count">;
+                uint32 count <name="Element Count">;
+                uint32 count <name="Element Count">;
+                uint32 count <name="Element Count">;
+                uint32 count <name="Element Count">;
+                uint32 disappear <name="Disappear Time">;
+                uint32 disappear <name="Disappear Time">;
+		        //ubyte ukn[0x2C - 4];
+			} spawn <name="Spawn">;
+			break;
+
+		case ItemType_Transform3D:
+            struct{
+                uint32 ukn;
+			    float xPos <name="Position X">;
+			    float yPos <name="Position Y">;
+			    float zPos <name="Position Z">;
+			    float xRot <name="Rotation X">;
+			    float yRot <name="Rotation Y">;
+			    float zRot <name="Rotation Z">;
+			    float xScale <name="Scale X">;
+			    float yScale <name="Scale Y">;
+			    float zScale <name="Scale Z">;
+			    uint32 ukn;
+            } transform3D <name="Transform 3D">;
+            break;
+
+		case ItemType_TypePolygon:
+			struct{
+				uint32 ukn1[2];
+                mpos[h] = FTell();
+                h++;
+                mid_cc mid_color;
+				float ukn2[2];
+                uint32 ukn3;
+                float ukn4[15];
+			} typePolygon <name="Type Polygon">;
+			break;
+
+		case ItemType_ScaleAnim:
+			struct{
+					ubyte ukn[0x48 - 4];
+			} scaleAnim <name="Scale Anim">;
+			break;
+
+		case ItemType_Life:
+			struct{
+					ubyte ukn[0x2C - 4];
+			} life <name="Life">;
+			break;
+
+		case ItemType_UVSequence:
+			struct{
+					uint32 ukn[3];
+                    uint32 startingFrame1 <name="Starting Frame">;
+                    uint32 startingFrame2 <name="Starting Frame">;
+                    float animationSpeed1 <name="Animation Speed">;
+                    float animationSpeed2 <name="Animation Speed">;
+                    Animation_Mode mode <name="Texture Animation Mode">;
+                    uvs_t  uvs <name="UVS Path">;
+					/*uint32  uvsPathSize <name="UVS Path length">;
+					if(0 < uvsPathSize){
+						wchar_t uvsPath[uvsPathSize] <name="UVS Path", bgcolor=0x99FF99, open=suppress>;
+					}*/
+			} uVSequence <name="UV Sequence">;
+			break;
+
+		case ItemType_ShaderSettings:
+			struct{
+                uint32 ukn1;
+                float  saturation <name="Saturation">;
+                float  ukn4;
+                float  layerNeg <name="Layer Negative", comment="The smaller it is the more it gets in front of the other objects.">;
+                uint32 layerPos <name="Layer Positive", comment="The bigger it is the more it gets in front of the other objects.">;
+                ubyte  ukn8[4];
+                float  ukn9;
+                float  ukn10;
+                float  ukn11;
+                float  ukn12;
+                float  ukn13;
+                float  ukn14;
+                float  ukn15[3];
+                float  ukn16;
+                float  ukn17;
+                float  ukn18;
+                uint32 ukn19;
+                float  colorBrightness <name="Color Brightness">;
+			    //ubyte ukn[0x54 - 4];
+			} shaderSettings <name="Shader Settings">;
+			break;
+
+		case ItemType_TypeNoDraw:
+			struct{
+					uint32 ukn1[2];
+                    mpos[h] = FTell();
+                    h++;
+                    mid_cc mid_color;
+					uint32 ukn2[12];
+			} typeNoDraw <name="Type No Draw">;
+			break;
+
+		case ItemType_Transform3DExpression:
+			struct{
+				uint32 ukn1[11];
+				uint32 secCSize <name="Second Chunk Size">;
+				if(0 < secCSize){
+					ubyte  ukn2[secCSize];
+				}
+			} transform3DExpression <name="Transform 3D Expression">;
+			break;
+
+		case ItemType_PtBehavior:
+			struct{
+				uint32 ukn[2];
+				uint32 scrSize <name="Script Size">;
+				uint32 varCount <name="Script Variable Count">;
+				char   str[scrSize] <name="Script", bgcolor=0xFFFFAA, open=suppress>;
+				for (e = 0; e < varCount; e++){
+				    struct{
+					    uint32 varSize <name="Variable Size">;
+                        uint32 varID <name="Variable Type ID">;
+                        if(varID == 0x0F){
+                            ubyte ukn[8];
+                            spos[i] = FTell();
+                            i++;
+                            small_cc small_color;
+                            char var[varSize-16] <name="Variable", bgcolor=0xA3BECC, open=suppress>;
+                        }else{
+                            ubyte ukn[8];
+					        char  variable[varSize-12] <name="Vairable", bgcolor=0xD6D6D6, open=suppress>;
+                        }
+				    } variable <name="Script Variable">;
+				}
+			} ptBehavior <name="Pt Behavior">;
+			break;
+
+		case ItemType_TypeMesh:
+			struct{
+				uint32 ukn1[2];
+				uint32 overriddenHashCount <name="Overridden Hash Count">;
+                mpos[h] = FTell();
+                h++;
+                mid_cc mid_color;
+				uint32 ukn2[8];
+                float rotationXMin <name="Rotation Minimum X">;
+                float rotationXMax <name="Rotation Maximum X">;
+                float rotationYMin <name="Rotation Minimum Y">;
+                float rotationYMax <name="Rotation Y Maximum">;
+                float rotationZMin <name="Rotation Minimum Z">;
+                float rotationZMax <name="Rotation Z Maximum">;
+                float scaleXMin <name="Scale Minimum X">;
+                float scaleXMax <name="Scale X Maximum">;
+                float scaleYMin <name="Scale Minimum Y">;
+                float scaleYMax <name="Scale Y Maximum">;
+                float scaleZMin <name="Scale Minimum Z">;
+                float scaleZMax <name="Scale Z Maximum">;
+                float scaleMultiplierMin <name="Scale Multiplier Minimum">;
+                float scaleMultiplierMax <name="Scale Multiplier Maximum">;
+				uint32 ukn3[3];
+				mdf_mesh_t mesh <name="Mesh">;
+				mdf_mdf_t  mdf <name="MDF">;
+				mdf_tex_t  tex <name="Texture">;
+				for (e = 0; e < overriddenHashCount; e++){
+					struct parameter_struct{
+					    uint32 prop_hash <name="UTF-16 Name Hash">;
+                        ushort parameterCount <name="Parameter Count">;
+                        ushort fltsSecondCount <name="Second Count">;
+                        uint32 ukn;
+                        if(mdf_is_color(parameterCount ,prop_hash)){
+                            fpos[p] = FTell();
+                            p++;
+                            float_cc float_RGB;
+                        }else{
+                            float parameter[parameterCount] <name="Parameter">;
+                            if(4 - parameterCount)  float padding[4 - parameterCount] <name="Padding">;
+                        }
+					} parameters <name=property_name>;
+                }
+				if(0 < mesh.size){
+					wchar_t meshP[mesh.size] <name="Mesh Path", bgcolor=0x99FF99, open=suppress>;
+				}
+				if(0 < mdf.size){
+					wchar_t mdfP[mdf.size] <name="MDF Path", bgcolor=0x66FFFF, open=suppress>;
+				}
+				if(0 < tex.size){
+					wchar_t texP[tex.size] <name="Texture Path", bgcolor=0xFFC79F>;
+				}
+			} typeMesh <name="Type Mesh">;
+			break;
+
+		case ItemType_Velocity3D:
+			struct{
+				ubyte ukn[0x68 - 4];
+			} velocity3D <name="Velocity 3D">;
+			break;
+
+		case ItemType_TypeBillboard3D:
+			struct{
+				uint32 ukn1[2];
+                mpos[h] = FTell();
+                h++;
+                mid_cc mid_color;
+				uint32 ukn2[14];
+			} typeBillboard3D <name="Type Billboard 3D">;
+			break;
+
+		case ItemType_TypeRibbonFollow:
+			struct{
+				uint32 ukn1[2];
+                mpos[h] = FTell();
+                h++;
+                mid_cc mid_color;
+				//uint32 ukn2[12];
+                float ukn2[2];
+                float scaleXMin; //doubt
+                float scaleXMax; //doubt
+                float scaleYMin; //doubt
+                float scaleYMax; //doubt
+                float scaleZMin; //doubt
+                float scaleZMax; //doubt
+                uint32 ukn3;
+                float ukn4;
+                uint32 ukn5[2];
+                lpos[j] = FTell();
+                j++;
+                large_cc largel_color;
+				float ukn6[6];
+			} typeRibbonFollow <name="Type Ribbon Follow">;
+			break;
+
+		case ItemType_EmitterShape3D:
+			struct{
+				uint32  ukn;
+				float   spreadXMin <name="Spread X Minimum">;
+				float   spreadXMax <name="Spread X Maximum">;
+				float   spreadYMin <name="Spread Y Minimum">;
+				float   spreadYMax <name="Spread Y Maximum">;
+				float   spreadZMin <name="Spread Z Minimum">;
+				float   spreadZMax <name="Spread Z Maximum">;
+				uint32  ukn1[12];
+			} emitterShape3D <name="Emitter Shape 3D">;
+			break;
+
+		case ItemType_TypeRibbonLength:
+			struct{
+				uint32  ukn1[2];
+                mpos[h] = FTell();
+                h++;
+                mid_cc mid_color;
+				uint32  ukn2[22];
+                lpos[j] = FTell();
+                j++;
+                large_cc largel_color;
+				uint32  ukn3[6];
+			} typeRibbonLength <name="Type Ribbon Length">;
+			break;
+
+		case ItemType_RotateAnim:
+			struct{
+				uint32 ukn1[2];
+				float  ukn;
+				float  ukn;
+				float  ukn;
+				uint32 ukn2[9];
+			} rotateAnim <name="Rotate Anim">;
+			break;
+
+		case ItemType_PtCollision:
+			struct{
+				uint32 ukn1[2];
+				float  ukn;
+				float  ukn;
+				uint32 ukn2[2];
+				float  ukn;
+				float  ukn;
+				float  ukn;
+				float  ukn;
+				uint32 ukn3[2];
+				float  ukn;
+				uint32 ukn4[2];
+			} ptCollision <name="Pt Collision">;
+			break;
+
+		case ItemType_PtColor:
+            struct{
+                uint32 ukn[3];
+                spos[i] = FTell();
+                i++;
+                small_cc small_color;
+            } ptColor <name="Pt Color">;
+			break;
+
+		case ItemType_Transform3DModifier:
+			struct{
+				ubyte ukn[0xE4 - 4];
+			} transform3DModifier <name="Transform 3D Modifier">;
+			break;
+
+		case ItemType_PtLife:
+			struct{
+				ubyte ukn[0x14 - 4];
+			} ptLife <name="Pt Life">;
+			break;
+
+		case ItemType_AlphaCorrection:
+			struct{
+				uint32 ukn1;
+                uint32 ukn2;
+                float  darknessValue <name="Darkness Value">;
+                float  ukn3;
+                float  ukn4;
+			} alphaCorrection <name="Alpha Correction">;
+			break;
+
+		case ItemType_Distortion:
+			struct{
+                uint32 ukn1;
+                uint32 ukn2;
+                float  strength <name="Distortion Strength">;
+				//ubyte ukn[0x10 - 4];
+			} distortion <name="Distortion">;
+			break;
+
+		case ItemType_FixRandomGenerator:
+			struct{
+				ubyte ukn[0x1C - 4];
+			} fixRandomGenerator <name="Fix Random Generator">;
+			break;
+
+		case ItemType_TypeGpuRibbonFollow:
+			struct{
+				uint32 ukn1[5];
+                mpos[h] = FTell();
+                h++;
+                mid_cc mid_color;
+				uint32 ukn[6];
+			} typeGpuRibbonFollow <name="Type Gpu Ribbon Follow">;
+			break;
+
+		case ItemType_PtColorClip:
+            struct{
+                uint32 ukn1;
+                uint32 secChunkID <name="Second Chunk Type ID">;
+                uint32 ukn2;
+                Cycle_Loop loop <name="Loop State", format=hex, bgcolor=0x99CCFF>;
+                float  loopTime <name="Loop Duration", bgcolor=0xFF9BDE>;
+                uint32 ukn3[3];
+                uint32 firstChunkSize <name="First Chunk Size">;
+                uint32 secondChunkSize <name="Second Chunk Size">;
+                uint32 thirdChunkSize <name="Third Chunk Size">;
+                backPos = FTell();
+                if(0 < firstChunkSize){
+                    struct{
+                        for(e = 0; e < firstChunkSize/8; e++){
+                            uint32 colorBitCount <name="Color Count">;
+                            colorBitCount_arr[e] = colorBitCount;
+                            uint32 intCount <name="Color INT Count">;
+                            intCount_arr[e] = intCount;
+                        }
+                    } firstChunk <name="First Chunk (Second Chunk Data)", bgcolor=0xFFBD9B>;
+                }
+                if(0 < secondChunkSize){
+                    backPoseSC = FTell();
+                    switch (secChunkID) {
+                        case 0x0000000F:
+                            struct{
+								for(e = 0; e < 4; e++){
+									switch(e+1){
+										case 1:
+											for(c5it = 0; c5it < colorBitCount_arr[e]; c5it++){
+												struct{
+													float appearTime <name="Appear Time", bgcolor=0xA2A2A2>;
+													uint32 ukn;
+													if( colorBitCount_arr[3] > c5it){
+														redPos[red] = FTell();
+														red++;
+													} else {
+														alphaLessRedPos[alphaLessRed] = FTell();
+														alphaLessRed++;
+													}
+													ubyte red <name="Red", bgcolor=0x9B9BFF>;
+													ubyte ukn2[3];
+												} redSt <name="Red">;
+											}
+											break;
+											
+										case 2:
+											for(c5it = 0; c5it < colorBitCount_arr[e]; c5it++){
+												struct{
+													float appearTime <name="Appear Time", bgcolor=0xA2A2A2>;
+													uint32 ukn;
+													if( colorBitCount_arr[3] > c5it){
+														greenPos[green] = FTell();
+														green++;
+													} else {
+														alphaLessGreenPos[alphaLessGreen] = FTell();
+														alphaLessGreen++;
+													}
+													ubyte green <name="Green", bgcolor=0x67AA67>;
+													ubyte ukn2[3];
+												} greenSt <name="Green">;
+											}
+											break;
+											
+										case 3:
+											for(c5it = 0; c5it < colorBitCount_arr[e]; c5it++){
+												struct{
+													float appearTime <name="Appear Time", bgcolor=0xA2A2A2>;
+													uint32 ukn;
+													if( colorBitCount_arr[3] > c5it){
+														bluePos[blue] = FTell();
+														blue++;
+													} else {
+														alphaLessBluePos[alphaLessBlue] = FTell();
+														alphaLessBlue++;
+													}
+													ubyte blue <name="Blue", bgcolor=0xFF9B9B>;
+													ubyte ukn2[3];
+												} blueSt <name="Blue">;
+											}
+											break;
+											
+										case 4:
+											for(c5it = 0; c5it < colorBitCount_arr[e]; c5it++){
+												struct{
+													float appearTime <name="Appear Time", bgcolor=0xA2A2A2>;
+													uint32 ukn;
+													alphaPos[alpha] = FTell();
+													alpha++;
+													ubyte alpha <name="Alpha", bgcolor=0x9BFFFF>;
+													ubyte ukn2[3];
+												} alphaSt <name="Alpha">;
+											}
+											break;
+										default:
+											break;
+									}
+								}
+							}secondChunk <name="Second Chunk (Color & Alpha)">;
+                            break;
+                        case 0x00000008:
+							for(c5it = 0; c5it < colorBitCount_arr[0]; c5it++){
+								struct{
+									float appearTime <name="Appear Time", bgcolor=0xA2A2A2>;
+									uint32 ukn;
+									onlyAlphaPos[onlyAlpha]= FTell();
+									onlyAlpha++;
+									ubyte alpha <name="Alpha", bgcolor=0x9BFFFF>;
+									ubyte ukn2[3];
+								} alphaSt <name="Alpha">;
+							}
+							break;
+                        case 0x00000007:
+                        case 0x0000000E:
+                            struct{
+								for(e = 0; e < 3; e++){
+									switch(e+1){
+										case 1:
+											for(c5it = 0; c5it < colorBitCount_arr[e]; c5it++){
+												struct{
+													float appearTime <name="Appear Time", bgcolor=0xA2A2A2>;
+													uint32 ukn;
+													alphaLessRedPos[alphaLessRed] = FTell();
+													alphaLessRed++;
+													ubyte red <name="Red", bgcolor=0x9B9BFF>;
+													ubyte ukn2[3];
+												} redSt <name="Red">;
+											}
+											break;
+											
+										case 2:
+											for(c5it = 0; c5it < colorBitCount_arr[e]; c5it++){
+												struct{
+													float appearTime <name="Appear Time", bgcolor=0xA2A2A2>;
+													uint32 ukn;
+													alphaLessGreenPos[alphaLessGreen] = FTell();
+													alphaLessGreen++;
+													ubyte green <name="Green", bgcolor=0x67AA67>;
+													ubyte ukn2[3];
+												} greenSt <name="Green">;
+											}
+											break;
+											
+										case 3:
+											for(c5it = 0; c5it < colorBitCount_arr[e]; c5it++){
+												struct{
+													float appearTime <name="Appear Time", bgcolor=0xA2A2A2>;
+													uint32 ukn;
+													alphaLessBluePos[alphaLessBlue] = FTell();
+													alphaLessBlue++;
+													ubyte blue <name="Blue", bgcolor=0xFF9B9B>;
+													ubyte ukn2[3];
+												} blueSt <name="Blue">;
+											}
+											break;
+											
+										default:
+											break;
+									}
+								}
+							}secondChunk <name="Second Chunk (Color & Alpha)">;
+							break;
+                        default:
+                            struct{
+                                uint32 ukn[secondChunkSize/4];
+                            } secondChunk <name="Second Chunk">;
+                            break;
+                    }
+                }
+                if(0 < thirdChunkSize){
+                    struct{
+                        uint32 ukn[thirdChunkSize/4];
+                    } thirdChunk <name="Third Chunk", bgcolor=0x9BFFF9B>;
+                }
+                FSeek(backPos + firstChunkSize + secondChunkSize + thirdChunkSize);
+            } ptColorClip <name="Pt Color Clip">;
+            break;
+
+		case ItemType_FadeByDepth:
+            struct{
+                ubyte ukn[0x18 - 4];
+            } fadeByDepth <name="Fade By Depth">;
+            break;
+
+		case ItemType_TypeGpuBillboard:
+            struct{
+                uint32 ukn1[3];
+                mpos[h] = FTell();
+                h++;
+                mid_cc mid_color;
+                uint32 ukn2[7];
+            } typeGpuBillboard <name="Type Gpu Billboard">;
+            break;
+
+		case ItemType_ParentOptions:
+            struct{
+                uint32 ukn[11];
+                bone_t bone <name="Bone">;
+            } parentOptions <name="Parent Options">;
+            break;
+
+		case ItemType_SpawnExpression:
+            struct{
+                uint32 ukn1[6];
+                uint32 secondPSize <name="Second Part's Size">;
+                if(0 < secondPSize){
+                    ubyte ukn2[secondPSize] <name="Second Part">;
+                }
+            } spawnExpression <name="Spawn Expression">;
+            break;
+
+		case ItemType_TypeMeshClip:
+            struct{
+                uint32 ukn1[2];
+                uint32 part2Size <name="Second Part Line Count">;
+                uint32 ukn2[5];
+                uint32 part3Size <name="Third Size">;
+                uint32 part4Size <name="Fourth Size">;
+                uint32 part5Size <name="Fifth Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte part2[part2Size*16] <name="Unknown Part 2nd">;
+                    } part2 <name="Second Part">;
+                }
+                if(0 < part3Size){
+                    struct{
+                        ubyte part3[part3Size] <name="Unknown Part 3rd">;
+                    } part3 <name="Third Part">;
+                }
+                if(0 < part4Size){
+                    struct{
+                        ubyte part4[part4Size] <name="Unknown Part 4th">;
+                    } part4 <name="Forth Part">;
+                }
+                if(0 < part5Size){
+                    struct{
+                        ubyte part5[part5Size] <name="Unknown Part 5th">;
+                    } part5 <name="Fifth Part">;
+                }
+            } typeMeshClip <name="Type Mesh Clip">;
+            break;
+
+		case ItemType_EmitterShape3DExpression:
+            struct{
+                uint32 ukn[9];
+                uint32 secondPSize <name="Second Part's Size">;
+                if(0 < secondPSize){
+                    struct{
+                        ubyte ukn2[secondPSize];
+                    } secondPart <name="Second Part">;
+                }
+            } emitterShape3DExpression <name="Emitter Shape 3D Expression">;
+            break;
+
+		case ItemType_UnitCulling:
+			struct{
+				ubyte ukn[0x30 - 4];
+			} unitCulling <name="Unit Culling">;
+			break;
+
+		case ItemType_PtColliderAction:
+			struct{
+				ubyte ukn[0x18 - 4];
+			} ptColliderAction <name="Pt Collider Action">;
+			break;
+
+		case ItemType_PtTransform3D:
+			struct{
+				ubyte ukn[0x2C - 4];
+			} ptTransform3D <name="Pt Transform 3D">;
+			break;
+
+		case ItemType_TypePolygonTrail:
+			struct{
+				uint32 ukn1[2];
+                mpos[h] = FTell();
+                h++;
+                mid_cc mid_color;
+                uint32 ukn2[11];
+                lpos[j] = FTell();
+                j++;
+                large_cc largel_color;
+                uint32 ukn3;
+			} typePolygonTrail <name="Type Polygon Trail">;
+			break;
+
+		case ItemType_TypeRibbonFixEnd:
+			struct{
+				ubyte ukn[0x7C - 4];
+			} typeRibbonFixEnd <name="Type Ribbon Fix End">;
+			break;
+
+		case ItemType_TypeRibbonChain:
+			struct{
+                uint32 ukn1[2];
+                mpos[h] = FTell();
+                h++;
+                mid_cc mid_color;
+				ubyte ukn2[0xC0 - 4];
+			} typeRibbonChain <name="Type Ribbon Chain">;
+			break;
+
+		case ItemType_TypeRibbonFixEndExpression:
+            struct{
+                ubyte ukn1[36];
+                uint32 ukn_size <name="Unknown Size">;
+                struct{
+                    ubyte ukn[ukn_size];
+                }ukn_part <name="Unknown Part">;
+            } typeRibbonFixEndExpression <name="Type Ribbon Fix End Expression">;
+            break;
+
+		case ItemType_Velocity2D:
+			struct{
+				ubyte ukn[0x3C - 4];
+			} velocity2D <name="Velocity 2D">;
+			break;
+
+		case ItemType_EmitterShape2D:
+			struct{
+				ubyte ukn[0x28 - 4];
+			} emitterShape2D <name="Emitter Shape 2D">;
+			break;
+
+		case ItemType_Transform2D:
+			struct{
+				ubyte ukn[0x1C - 4];
+			} transform2D <name="Transform 2D">;
+			break;
+
+		case ItemType_TypeBillboard2D:
+			struct{
+				ubyte ukn[0x48 - 4];
+			} typeBillboard2D <name="Type Billboard 2D">;
+			break;
+
+		case ItemType_FadeByAngle:
+			struct{
+				ubyte ukn[0x24 - 4];
+			} fadeByAngle <name="Fade By Angle">;
+			break;
+
+		case ItemType_FadeByOcclusion:
+			struct{
+				ubyte ukn[0x18 - 4];
+			} fadeByOcclusion <name="Fade By Occlusion">;
+			break;
+
+		case ItemType_PtUvSequence:
+			struct{
+				ubyte ukn[0x18 - 4];
+			} ptUvSequence <name="Pt Uv Sequence">;
+			break;
+
+		case ItemType_VectorFieldParameter:
+			struct{
+				ubyte ukn[0x4C - 4];
+			} vectorFieldParameter <name="Vector Field Parameter">;
+			break;
+
+		case ItemType_DepthOperator:
+			struct{
+				ubyte ukn[0x14 - 4];
+			} depthOperator <name="Depth Operator">;
+			break;
+
+		case ItemType_AngularVelocity3D:
+			struct{
+				ubyte ukn[0x58 - 4];
+			} angularVelocity3D <name="Angular Velocity 3D">;
+			break;
+
+		case ItemType_IgnorePlayerColor:
+			struct{
+				ubyte ukn[0x08 - 4];
+			} ignorePlayerColor <name="Ignore Player Color">;
+			break;
+
+		case ItemType_ProceduralDistortion:
+			struct{
+				ubyte ukn[0x20 - 4];
+			} proceduralDistortion <name="Procedural Distortion">;
+			break;
+		case ItemType_Transform3DClip:
+            struct{
+                uint32 ukn1[8];
+                uint32 part2Size <name="Second Part's Size">;
+                uint32 part3Size <name="Third Part's Size">;
+                uint32 part4Size <name="Fourth Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+                if(0 < part3Size){
+                    struct{
+                        ubyte ukn[part3Size];
+                    } part3 <name="Part">;
+                }
+                if(0 < part4Size){
+                    struct{
+                        ubyte ukn[part4Size];
+                    } part4 <name="Part">;
+                }
+            } transform3DClip <name="Transform 3D Clip">;
+            break;
+
+		case ItemType_TypeBillboard3DExpression:
+            struct{
+                uint32 ukn1[10];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } typeBillboard3DExpression <name="Type Billboard 3D Expression">;
+            break;
+
+		case ItemType_TypeMeshExpression:
+            struct{
+                uint32 ukn1[2];
+                uint32 part2Size <name="Second Part's Size">;
+                uint32 ukn2[22];
+                uint32 part3Size <name="Third Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+                if(0 < part3Size){
+                    struct{
+                        ubyte ukn[part3Size];
+                    } part3 <name="Part">;
+                }
+            } typeMeshExpression <name="Type Mesh Expression">;
+            break;
+
+		case ItemType_TypeRibbonFollowExpression:
+            struct{
+                uint32 ukn1[9];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } typeRibbonFollowExpression <name="Type Ribbon Follow Expression">;
+            break;
+
+		case ItemType_TypeRibbonLengthExpression:
+            struct{
+                uint32 ukn1[9];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } typeRibbonLengthExpression <name="Type Ribbon Length Expression">;
+            break;
+
+		case ItemType_TypePolygonClip:
+            struct{
+                uint32 ukn1[7];
+                uint32 part2Size <name="Second Part's Size">;
+                uint32 part3Size <name="Third Part's Size">;
+                uint32 part4Size <name="Fourth Part's Size">;
+                uint32 part5Size <name="Fifth Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+                if(0 < part3Size){
+                    struct{
+                        ubyte ukn[part3Size];
+                    } part3 <name="Part">;
+                }
+                if(0 < part4Size){
+                    struct{
+                        ubyte ukn[part4Size];
+                    } part4 <name="Part">;
+                }
+                if(0 < part5Size){
+                    struct{
+                        ubyte ukn[part5Size];
+                    } part5 <name="Part">;
+                }
+            } typePolygonClip <name="Type Polygon Clip">;
+            break;
+
+		case ItemType_Velocity3DExpression:
+            struct{
+                uint32 ukn1[14];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } velocity3DExpression <name="Velocity 3D Expression">;
+            break;
+
+		case ItemType_RotateAnimExpression:
+            struct{
+                uint32 ukn1[14];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } rotateAnimExpression <name="Rotate Anim Expression">;
+            break;
+
+		case ItemType_ScaleAnimExpression:
+            struct{
+                uint32 ukn1[4];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } scaleAnimExpression <name="Scale Anim Expression">;
+            break;
+
+		case ItemType_LifeExpression:
+            struct{
+                uint32 ukn1[5];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } lifeExpression <name="Life Expression">;
+            break;
+
+		case ItemType_TypeStrainRibbon:
+            struct{
+                uint32 ukn1[2];
+                mpos[h] = FTell();
+                h++;
+                mid_cc mid_color;
+                uint32 ukn2[36];
+                uint32 boneSize <name="Bone Name Size", bgcolor=0xC0FFC0>;
+                if(boneSize == 0x02){
+                    uint16  nobone <bgcolor=0xABA8FF, name="No Bone Found">;
+                } else{
+                    wchar_t bone[boneSize/2] <bgcolor=0x99CCFF, name="Bone Name", open=suppress>;
+                }
+            } typeStrainRibbon <name="Type Strain Ribbon">;
+            break;
+
+		case ItemType_TypeStrainRibbonExpression:
+            struct{
+                uint32 ukn1[15];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } typeStrainRibbonExpression <name="Type Strain Ribbon Expression">;
+            break;
+
+		case ItemType_FadeByDepthExpression:
+            struct{
+                uint32 ukn1[6];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } fadeByDepthExpression <name="Fade By Depth Expression">;
+            break;
+
+		case ItemType_MeshEmitter:
+            struct{
+				uint32 ukn2[21];
+				uint32 mapPathSize <name="Map Path Size">;
+				uint32 meshPathSize <name="Mesh Path Size">;
+				uint32 mdfPathSize <name="MDF Path Sie">;
+				uint32 mskPathSize <name="MSK Path Size">;
+				if(0 < mapPathSize){
+					wchar_t map[mapPathSize] <name="Map Path", bgcolor=0x9B9BFF, open=suppress>;
+				}
+				if(0 < meshPathSize){
+					wchar_t mesh[meshPathSize] <name="Mesh Path", bgcolor=0x99FF99, open=suppress>;
+				}
+				if(0 < mdfPathSize){
+					wchar_t mdf[mdfPathSize] <name="MDF Path", bgcolor=0x66FFFF, open=suppress>;
+				}
+				if(0 < mskPathSize){
+					wchar_t tex[mskPathSize] <name="MSK Path", bgcolor=0xFFC79F, open=suppress>;
+				}
+            } meshEmitter <name="Mesh Emitter">;
+            break;
+
+		case ItemType_MeshEmitterExpression:
+            struct{
+                uint32 ukn1[18];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } meshEmitterExpression <name="Mesh Emitter Expression">;
+            break;
+
+		case ItemType_VectorFieldParameterClip:
+            struct{
+                uint32 ukn1[8];
+                uint32 part2Size <name="Second Part's Size">;
+                uint32 part3Size <name="Third Part's Size">;
+                uint32 part4Size <name="Fourth Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+                if(0 < part3Size){
+                    struct{
+                        ubyte ukn[part3Size];
+                    } part3 <name="Part">;
+                }
+                if(0 < part4Size){
+                    struct{
+                        ubyte ukn[part4Size];
+                    } part4 <name="Part">;
+                }
+            } vectorFieldParameterClip <name="Vector Field Parameter Clip">;
+            break;
+
+		case ItemType_TypeGpuBillboardExpression:
+            struct{
+                uint32 ukn1[9];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } typeGpuBillboardExpression <name="Type Gpu Billboard Expression">;
+            break;
+
+		case ItemType_RenderTarget:
+            struct{
+                uint32 ukn1[2];
+                uint32 rtexSize <name="RTEX Path Size">;
+                if(0 < rtexSize){
+                    wchar_t rtexPath[rtexSize] <name="RTEX Path", bgcolor=0xFFCD9B, open=suppress>;
+                }
+            } renderTarget <name="Render Target">;
+            break;
+
+		case ItemType_ShaderSettingsExpression:
+            struct{
+                uint32 ukn1[3];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } shaderSettingsExpression <name="Shader Settings Expression">;
+            break;
+
+		case ItemType_PtUvSequenceClip:
+            struct{
+                uint32 ukn1[8];
+                uint32 part2Size <name="Second Part's Size">;
+                uint32 part3Size <name="Third Part's Size">;
+                uint32 part4Size <name="Fourth Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+                if(0 < part3Size){
+                    struct{
+                        ubyte ukn[part3Size];
+                    } part3 <name="Part">;
+                }
+                if(0 < part4Size){
+                    struct{
+                        ubyte ukn[part4Size];
+                    } part4 <name="Part">;
+                }
+            } ptUvSequenceClip <name="Pt Uv Sequence Clip">;
+            break;
+                            //One example found
+		case ItemType_TypeNoDrawExpression:
+			struct{
+                uint32 ukn1[16];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+			} typeNoDrawExpression <name="Type No Draw Expression">;
+			break;
+
+		case ItemType_FadeByEmitterAngle:
+			struct{
+				ubyte ukn[0x20 - 4];
+			} fadeByEmitterAngle <name="Fade By Emitter Angle">;
+			break;
+
+		case ItemType_LuminanceBleed:
+			struct{
+				ubyte ukn[0x20 - 4];
+			} luminanceBleed <name="Luminance Bleed">;
+			break;
+
+		case ItemType_PtVelocity3D:
+			struct{
+				ubyte ukn[0x18 - 4];
+			} ptVelocity3D <name="Pt Velocity 3D">;
+			break;
+
+		case ItemType_TypeRibbonLightweight:
+			struct{
+				ubyte ukn[0x38 - 4];
+			} typeRibbonLightweight <name="Type Ribbon Lightweight">;
+			break;
+
+		case ItemType_MeshEmitterClip:
+			struct{
+                uint32 ukn1[8];
+                uint32 part2Size <name="Second Part's Size">;
+                uint32 part3Size <name="Third Part's Size">;
+                uint32 part4Size <name="Fourth Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+                if(0 < part3Size){
+                    struct{
+                        ubyte ukn[part3Size];
+                    } part3 <name="Part">;
+                }
+                if(0 < part4Size){
+                    struct{
+                        ubyte ukn[part4Size];
+                    } part4 <name="Part">;
+                }
+			} meshEmitterClip <name="Mesh Emitter Clip">;
+			break;
+
+		case ItemType_EmitterPriority:
+			struct{
+				ubyte ukn[0x08 - 4];
+			} emitterPriority <name="Emitter Priority">;
+			break;
+
+		case ItemType_TypePolygonExpression:
+            struct{
+                uint32 ukn1[20];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } typePolygonExpression <name="Type Polygon Expression">;
+            break;
+
+		case ItemType_UVSequenceExpression:
+            struct{
+                uint32 ukn1[8];
+                uint32 part2Size <name="Second Part's Size">;
+                if(0 < part2Size){
+                    struct{
+                        ubyte ukn[part2Size];
+                    } part2 <name="Part">;
+                }
+            } uVSequenceExpression <name="UV Sequence Expression">;
+            break;
+
+		case ItemType_PtTransform3DClip:
+            struct{
+                uint32 ukn1[8];
+                uint32 sub1Size <name="Sub Segment 1 Size">;
+                uint32 sub2Size <name="Sub Segment 2 Size">;
+                uint32 sub3Size <name="Sub Segment 3 Size">;
+                if(0 < sub1Size){
+                    struct{
+                        for(e = 0; e < sub1Size/4; e++){
+                            uint32 ukn;
+                        }
+                    }sub1 <name="Sub Segment 1">;
+                }
+                if(0 < sub2Size){
+                    struct{
+                        for(e = 0; e < sub2Size/4; e++){
+                            uint32 ukn;
+                        }
+                    }sub2 <name="Sub Segment 2">;
+                }
+                if(0 < sub3Size){
+                    struct{
+                        for(e = 0; e < sub3Size/4; e++){
+                            uint32 ukn;
+                        }
+                    }sub3 <name="Sub Segment 3">;
+                }
+            } ptTransform3DClip <name="Pt Transform 3D Clip">;
+            break;
+//here
+		case ItemType_TypeRibbonTrail:
+			struct{
+				ubyte ukn[0x34 - 4];
+			} typeRibbonTrail <name="Type Ribbon Trail">;
+			break;
+
+		case ItemType_TypeLightning3D:
+			struct{
+				ubyte ukn[246];
+			} typeLightning3D <name="Type Lightning 3D">;
+			break;
+
+		case ItemType_FakeDoF:
+			struct{
+				ubyte ukn[0x1C - 4];
+			} fakeDoF <name="Fake Do F">;
+			break;
+
+		case ItemType_TypeNodeBillboard:
+			struct{
+				ubyte ukn[0xF8 - 4];
+			} typeNodeBillboard <name="Type Node Billboard">;
+			break;
+
+		case ItemType_FluidEmitter2D:
+			struct{
+				ubyte ukn[0x28 - 4];
+			} fluidEmitter2D <name="Fluid Emitter 2D">;
+			break;
+
+		case ItemType_PtTransform2D:
+			struct{
+				ubyte ukn[0x1C - 4];
+			} ptTransform2D <name="Pt Transform 2D">;
+			break;
+
+		case ItemType_DrawOverlay:
+			struct{
+				ubyte ukn[0x14 - 4];
+			} drawOverlay <name="Draw Overlay">;
+			break;
+
+		case ItemType_AngularVelocity2D:
+			struct{
+				ubyte ukn[0x44 - 4];
+			} angularVelocity2D <name="Angular Velocity 2D">;
+			break;
+
+		case ItemType_PtVelocity3DClip:
+			struct{
+                uint32 ukn1[8];
+                uint32 sub1Size <name="Sub Segment 1 Size">;
+                uint32 sub2Size <name="Sub Segment 2 Size">;
+                uint32 sub3Size <name="Sub Segment 3 Size">;
+                if(0 < sub1Size){
+                    struct{
+                        for(e = 0; e < sub1Size/4; e++){
+                            uint32 ukn;
+                        }
+                    }sub1 <name="Sub Segment 1">;
+                }
+                if(0 < sub2Size){
+                    struct{
+                        for(e = 0; e < sub2Size/4; e++){
+                            uint32 ukn;
+                        }
+                    }sub2 <name="Sub Segment 2">;
+                }
+                if(0 < sub3Size){
+                    struct{
+                        for(e = 0; e < sub3Size/4; e++){
+                            uint32 ukn;
+                        }
+                    }sub3 <name="Sub Segment 3">;
+                }
+			} ptVelocity3DClip <name="Pt Velocity 3D Clip">;
+			break;
+
+		case ItemType_FluidSimulator2D:
+			struct{
+                uint32 ukn1[47];
+                uint32 path1Size <name="Texture Path 1 Size">;
+                uint32 path2Size <name="Texture Path 2 Size">;
+                uint32 path3Size <name="Texture Path 3 Size">;
+                uint32 path4Size <name="Texture Path 4 Size">;
+                uint32 path5Size <name="Texture Path 5 Size">;
+                uint32 path6Size <name="Texture Path 6 Size">;
+                if(0 < path1Size){
+                    struct{
+                        wchar_t uvsPath[path1Size/2] <name="Path", bgcolor=0x9BBDFF, open=suppress>;
+                    }txt1 <name="Texture Path 1">;
+                }
+                if(0 < path2Size){
+                    struct{
+                        wchar_t uvsPath[path2Size/2] <name="Path", bgcolor=0xFFFF9B, open=suppress>;
+                    }txt2 <name="Texture Path 2">;
+                }
+                if(0 < path3Size){
+                    struct{
+                        wchar_t uvsPath[path3Size/2] <name="Path", bgcolor=0xFFCD9B, open=suppress>;
+                    }txt3 <name="Texture Path 3">;
+                }
+                if(0 < path4Size){
+                    struct{
+                        wchar_t uvsPath[path4Size/2] <name="Path", bgcolor=0x9BBDFF, open=suppress>;
+                    }txt4 <name="Texture Path 4">;
+                }
+                if(0 < path5Size){
+                    struct{
+                        wchar_t uvsPath[path5Size/2] <name="Path", bgcolor=0xFFFF9B, open=suppress>;
+                    }txt5 <name="Texture Path 5">;
+                }
+                if(0 < path6Size){
+                    struct{
+                        wchar_t uvsPath[path6Size/2] <name="Path", bgcolor=0xFFCD9B, open=suppress>;
+                    }txt6 <name="Texture Path 6">;
+                }
+			} fluidSimulator2D <name="Fluid Simulator 2D">;
+			break;
+
+		case ItemType_FadeByAngleExpression:
+			struct{
+                uint32 ukn1[4];
+                uint32 sub1Size <name="Sub Segment 1 Size">;
+                if(0 < sub1Size){
+                    struct{
+                        for(e = 0; e < sub1Size/4; e++){
+                            uint32 ukn;
+                        }
+                    }sub1 <name="Sub Segment 1">;
+                }
+			} fadeByAngleExpression <name="Fade By Angle Expression">;
+			break;
+
+		case ItemType_TextureUnit:
+			struct{
+                uint32 ukn1[119];
+                uint32 path1Size <name="UVS Path 1 Size">;
+                uint32 path2Size <name="UVS Path 2 Size">;
+                uint32 path3Size <name="UVS Path 3 Size">;
+                if(0 < path1Size){
+                    struct{
+                        wchar_t uvsPath[path1Size] <name="Path", bgcolor=0x9BBDFF, open=suppress>;
+                    }txt1 <name="Texture Path 1">;
+                }
+                if(0 < path2Size){
+                    struct{
+                        wchar_t uvsPath[path2Size] <name="Path", bgcolor=0xFFFF9B, open=suppress>;
+                    }txt2 <name="Texture Path 2">;
+                }
+                if(0 < path3Size){
+                    struct{
+                        wchar_t uvsPath[path3Size] <name="Path", bgcolor=0xFFCD9B, open=suppress>;
+                    }txt3 <name="Texture Path 3">;
+                }
+			} textureUnit <name="Texture Unit">;
+			break;
+
+		case ItemType_VectorFieldParameterExpression:
+			struct{
+                uint32 ukn1[13];
+                uint32 sub1Size <name="Sub Segment 1 Size">;
+                if(0 < sub1Size){
+                    struct{
+                        for(e = 0; e < sub1Size/4; e++){
+                            uint32 ukn;
+                        }
+                    }sub1 <name="Sub Segment 1">;
+                }
+			} vectorFieldParameterExpression <name="Vector Field Parameter Expression">;
+			break;
+
+		case ItemType_TypeNodeBillboardExpression:
+			struct{
+                uint32 ukn1[45];
+                uint32 sub1Size <name="Sub Segment 1 Size">;
+                if(0 < sub1Size){
+                    struct{
+                        for(e = 0; e < sub1Size/4; e++){
+                            uint32 ukn;
+                        }
+                    }sub1 <name="Sub Segment 1">;
+                }
+			} typeNodeBillboardExpression <name="Type Node Billboard Expression">;
+			break;
+
+		default:
+			Exit(FTell()-4);
+			break;
+
+//End of the function
+	}
+					
+}
+
+string EFX_Block_Name(struct Extra_EFX& input){
+    if(input.link){
+        return "Linked EFX - " + eff_name_utf8_hash_decode(input.utf8Hash);
+    } else{
+        return "Embedded EFX - "  + eff_name_utf8_hash_decode(input.utf8Hash);
+    }
+}
+
+wstring MSK4_Name(struct MSK4& input){
+    wstring name = eff_name_utf8_hash_decode(input.utf8Hash);
+    if(name != "__NULL__"){
+        return name;
+    }else{
+        return "MSK4 Header";
+    }
+}
+
+wstring Modifier_Name(struct Modifier& input){
+    wstring name = eff_name_utf8_hash_decode(input.utf8Hash);
+    if(name != "__NULL__"){
+        return name;
+    }else{
+        return "Modifier";
+    }
+}
+
+wstring Effect_Name(struct Effect& input){
+    wstring name = eff_name_utf8_hash_decode(input.utf8Hash);
+    if(name != "__NULL__"){
+        return name;
+    }else{
+        return "Effect";
+    }
+}
+
+wstring Cnd_Block_Name(struct Cnd_Block& input){
+    wstring name = eff_name_utf8_hash_decode(input.utf8Hash);
+    if(name != "__NULL__"){
+        return name;
+    }else{
+        return "Condition";
+    }
+}
+
+void EFXTemplate(){
+	struct{
+		char    magic[4] <name="File Magic", open=suppress>;
+		uint32  ukn;
+		uint32  effectCount <bgcolor=0xFBFFD9, name="Effect Count">;
+		uint32  nameBuffSize <bgcolor=0xDCDCFF, name="Name Buffer Size">;
+		uint32  efxCount <bgcolor=0xFFC1E1, name="Linked EFX Count">;
+		uint32  msk4Count <bgcolor=0xFFC1C1, name="MSK4 Count">;
+		uint32  modifierCount <bgcolor=0xFF99E6, name="Modifier Count">;
+		uint32  cndBlockCount <bgcolor=0xFFB7FF, name="Condition Block Count">;
+		uint32  cndBuffSize <bgcolor=0xA0FFFF,name="Condition Block Buffer Size">;
+	} Header <name="EFX Header">;
+	
+    if(Header.nameBuffSize){
+	    struct{
+            local uint64 bufferStart <hidden=true> = FTell();
+            while(true){
+                struct{
+                    if(ReadStringLength(FTell()) > 2) string effName <name="Effect Name">; else if (ReadWStringLength(FTell()) > 2) wstring effName <name="Effect Name">; else if(ReadWStringLength(FTell()) == 2) wstring effName <name="Effect Name">;else string effName <name="Effect Name">;
+                }bufferStr <name="String">;
+	    	    //ubyte    bfr[Header.nameBuffSize] <bgcolor=0xD4FFE6, name="Buffer", open=suppress>;
+                if(FTell() >= bufferStart + Header.nameBuffSize) break;
+            }
+            FSeek(bufferStart + Header.nameBuffSize);
+	    }nameBuffer <bgcolor=0xD4FFE6, name="Name Buffer">;
+    }
+	
+	if (Header.modifierCount > 0){
+        struct{
+		    for (d = 0; d < Header.modifierCount; d++){
+			    struct Modifier{
+                    uint32 utf16Hash <name="UTF-16 Name Hash">;
+                    uint32 utf8Hash <name="UTF-8 Name Hash">;
+                    float  ukn;
+                    float  param <name="Parameter">;
+                    float  ukn;
+                    float  ukn;
+			    }modifier <name=Modifier_Name>;
+		    }
+        }modifiers <name="Modifiers">;
+	}
+	
+	if (0 < Header.efxCount){
+		for(f = 0; f < Header.efxCount; f++){
+			struct Extra_EFX {
+                local ubyte link <hidden=true> = false;
+				uint32 ukn;
+                uint32 utf8Hash <name="UTF-8 Hash">;
+				uint32 ukn;
+				uint32 ukn;
+				uint32 ukn;
+				uint32 efxSize <name="Path/EFX Size">;
+				local char efxID[4] <hidden=true, open=suppress>;
+                ReadBytes(efxID, FTell(), 4);
+				if(efxID == "efxr"){
+					EFXTemplate();
+				} else{
+                    link = true;
+					wchar_t efxPath[efxSize] <name="Linked EFX Path", bgcolor=0xFFC1E1, open=suppress>;
+				}
+			} efxHeader <name=EFX_Block_Name>;
+		}
+	}
+
+	if (Header.msk4Count > 0){
+        struct {
+		    for (c = 0; c < Header.msk4Count; c++){
+                struct MSK4 {
+                    local uint32 msk4mod <hidden=true, format=hex> = ReadUInt(FTell() + 12);
+                    uint32 ukn1;
+                    uint32 utf8Hash <name="UTF-8 Name Hash">;
+                    uint32 ukn2[6];
+                    float  ukn3[3];
+                    if(msk4mod != 0x6F) msk4_t msk4 <name="MSK4 Path", open=suppress>;
+			    }msk4Header <name=MSK4_Name>;
+		    }
+        } msk4Headers <name="MSK4 Headers">;
+	}
+	
+    if(Header.effectCount){
+        struct{
+			for (a = 0; a < Header.effectCount; a++){
+				struct Effect{
+					uint32 eff_index <name="Effect Index">;
+					uint32 utf8Hash <name="Name Hash">;
+					uint32 ukn;
+					uint32 SegmentCount <name="Segment Count">;
+						for (b = 0; b < SegmentCount; b++){
+							struct Segment{
+								EffectGraphType typeId <name="Item Type ID", format=hex>;
+								HeaderKind(typeId);
+							}segment <name="Segment", read=GetSegmentName>;
+						}
+			
+				}effect <name=Effect_Name>;
+			}
+        }effects <name="Effects">;
+    }
+
+	if (0 < Header.cndBlockCount){
+        struct{
+    			for (g = 0; g < Header.cndBlockCount; g++){
+				struct Cnd_Block{
+					uint32 utf16Hash <bgcolor=0x319fff, name="UTF-16 Name Hash">;
+					uint32 utf8Hash <bgcolor=0x9494FF, name="UTF-8 Name Hash">;
+					uint32 indexCount <name="Index Count", bgcolor=0x00BD00>;
+					uint32 effectIndex[indexCount] <bgcolor=0x99FF99, name="Effect Index">;
+				} cndBlock <name=Cnd_Block_Name>;
+			}
+        }cndBlocks <name="Condition Blocks">;
+	}
+}
+
+EFXTemplate();
+
+if(h+i+j+red+green+blue+alpha > 0){
+    FSeek(0);
+	struct{
+		if(0 < i){
+			for(z = 0; z < i; z++){
+				FSeek(spos[z]);
+                small_cc small_color;
+			}
+		}
+
+		if(0 < h){
+			for(z = 0; z < h; z++){
+				FSeek(mpos[z]);
+                mid_cc mid_color;
+			}
+		}
+
+		if(0 < j){
+			for(z = 0; z < j; z++){
+				FSeek(lpos[z]);
+                large_cc largel_color;
+			}
+		}
+		if(0 < red+green+blue+alpha){
+            FSeek(0);
+            struct{
+			    for(z = 0; z < red; z++){
+                    FSeek(redPos[z]-8);
+                    struct{
+				        FSeek(redPos[z]);
+                        ubyte red <name="Red">;
+				        FSeek(greenPos[z]);
+                        ubyte green <name="Green">;
+				        FSeek(bluePos[z]);
+                        ubyte blue <name="Blue">;
+				        FSeek(alphaPos[z]);
+                        ubyte alpha <name="Alpha">;
+				        FSeek(redPos[z]-8);
+                        float redAppearTime <name="Red Appear Time">;
+				        FSeek(greenPos[z]-8);
+                        float greenAppearTime <name="Green Appear Time">;
+				        FSeek(bluePos[z]-8);
+                        float blueAppearTime <name="Blue Appear Time">;
+				        FSeek(alphaPos[z]-8);
+                        float alphaAppearTime <name="Alpha Appear Time">;
+                        FSkip(8);
+                    } cyclingColors <name="Cycling Colors (RGBA)">;
+                    FSeek(4);
+			    }
+            } cycle <name="Cycling Colors (RGBA)">;
+		}
+		if(0 < onlyAlpha){
+            FSeek(0);
+            struct{
+		        for(z = 0; z < onlyAlpha; z++){
+                    FSeek(onlyAlphaPos[z]-8);
+                    struct{
+				        FSeek(onlyAlphaPos[z]);
+                        ubyte alpha <name="Alpha">;
+				        FSeek(onlyAlphaPos[z]-8);
+                        float alphaAppearTime <name="Alpha Appear Time">;
+                        FSkip(8);
+                    } cyclingColors <name="Cycling Alphas">;
+		        }
+            FSeek(4);
+            } cycle <name="Cycling Alphas">;
+		}
+		if(0 < alphaLessRed+alphaLessGreen+alphaLessBlue){
+            FSeek(0);
+            struct{
+		        for(z = 0; z < alphaLessRed; z++){
+                    FSeek(alphaLessRedPos[z]-8);
+                    struct{
+				        FSeek(alphaLessRedPos[z]);
+                        ubyte noAlphaRed <name="Red">;
+				        FSeek(alphaLessGreenPos[z]);
+                        ubyte noAlphaGreen <name="Green">;
+				        FSeek(alphaLessBluePos[z]);
+                        ubyte noAlphaBlue <name="Blue">;
+				        FSeek(alphaLessRedPos[z]-8);
+                        float noAlphaRedAppearTime <name="Red Appear Time">;
+				        FSeek(alphaLessGreenPos[z]-8);
+                        float noAlphaGreenAppearTime <name="Green Appear Time">;
+				        FSeek(alphaLessBluePos[z]-8);
+                        float noAlphaBlueAppearTime <name="Blue Appear Time">;
+                        FSkip(8);
+                    } cyclingColors <name="Cycling Colors (RGB)">;
+                    FSeek(4);
+			    }
+            } cycle <name="Cycling Colors (RGB)">;
+		}
+		if(0 < p){
+			for(z = 0; z < p; z++){
+				FSeek(fpos[z]);
+                float_cc float_RGB;
+			}
+		}
+        FSeek(4);
+	} colorCodes <name="Color Codes">;
+}
